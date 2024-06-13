@@ -23,8 +23,28 @@ class PVT:
         self.p2_input_bar = p2_input_bar
         self.p_step_input_bar = p_step_input_bar
 
+        '''
+        === description ===
+        Класс PVT принимает от пользователя базовые входные данные для расчета
+        
+        === input ===
+        rs_input_m3 - газосодержание в м3
+        oden_input - относительная плотность дегазированной нефти 
+        gden_input - относительная плотность газа
+        t_input_c - температура в градусах Цельсия
+        p1_input_bar - начальное давление для расчета в барах
+        p2_input_bar - конечное давление для расчета в барах
+        p_step_input_bar - шаг давления для расчета в барах
+        '''
+
     @functools.lru_cache()
     def RS_standing(self):
+        '''
+        === description ===
+        Функция расчета газосодержания для переданного диапазона давлений
+        === return ===
+        Возвращает датаферйм давление-газосодержание
+        '''
         rs_standing_res = []
         p_massive = np.arange(self.p1_input_bar * 14.5037, self.p2_input_bar * 14.5037,
                               self.p_step_input_bar * 14.5037)
@@ -46,6 +66,12 @@ class PVT:
 
     @functools.lru_cache
     def RS_glaso(self):
+        '''
+        === description ===
+        Функция расчета газосодержания для переданного диапазона давлений
+        === return ===
+        Возвращает датаферйм давление-газосодержание
+        '''
         rs_glaso_res = []
         p_massive = np.arange(self.p1_input_bar * 14.5037, self.p2_input_bar * 14.5037,
                               self.p_step_input_bar * 14.5037)
@@ -70,6 +96,12 @@ class PVT:
 
     @functools.lru_cache
     def RS_deghetto(self):
+        '''
+        === description ===
+        Функция расчета газосодержания для переданного диапазона давлений
+        === return ===
+        Возвращает датаферйм давление-газосодержание
+        '''
         p_massive = np.arange(self.p1_input_bar * 14.5037, self.p2_input_bar * 14.5037,
                               self.p_step_input_bar * 14.5037)
         rs_deghetto_res = []
@@ -120,6 +152,12 @@ class PVT:
     # Источник: https://www.ihsenergy.ca/support/documentation_ca/Harmony/content/html_files/reference_material/calculations_and_correlations/oil_correlations.htm
     @functools.lru_cache
     def RS_vb(self):
+        '''
+        === description ===
+        Функция расчета газосодержания для переданного диапазона давлений
+        === return ===
+        Возвращает датаферйм давление-газосодержание
+        '''
         rs_vb_res = []
         p_massive = np.arange(self.p1_input_bar * 14.5037, self.p2_input_bar * 14.5037,
                               self.p_step_input_bar * 14.5037)
@@ -152,6 +190,12 @@ class PVT:
 
     @functools.lru_cache
     def RS_pf(self):
+        '''
+        === description ===
+        Функция расчета газосодержания для переданного диапазона давлений
+        === return ===
+        Возвращает датаферйм давление-газосодержание
+        '''
         rs_pf_res = []
         p_massive = np.arange(self.p1_input_bar * 14.5037, self.p2_input_bar * 14.5037, self.p_step_input_bar * 14.5037)
         for p in p_massive:
@@ -175,6 +219,12 @@ class PVT:
 
     @functools.lru_cache
     def RS_lasater(self):
+        '''
+        === description ===
+        Функция расчета газосодержания для переданного диапазона давлений
+        === return ===
+        Возвращает датаферйм давление-газосодержание
+        '''
         rs_lasater_res = []
         p_massive = np.arange(self.p1_input_bar * 14.5037, self.p2_input_bar * 14.5037, self.p_step_input_bar * 14.5037)
         for p in p_massive:
@@ -198,6 +248,15 @@ class PVT:
 
     @functools.lru_cache
     def RS_standing_cal(self,p):
+        '''
+        === description ===
+        Вспомогательная функция расчета газосодержания для точечного расчета газосодержания.
+        Используется в других функциях: объемный коэффициент, вязкость
+        === input ===
+        p - давление для расчета
+        === return ===
+        Возвращает значение газосодержания
+        '''
         rs_standing = 1 * self.gden_input * m.pow(((p / 18.2) + 1.4) * m.pow(10, 0.0125 * (
                         (141.5 / self.oden_input) - 131.5) - 0.00091 * (self.t_input * 1.8 + 32)), 1.2048)
         if rs_standing < self.rs_input_m3 * 35.314 / 6.289:
@@ -207,6 +266,15 @@ class PVT:
 
     @functools.lru_cache
     def RS_glaso_cal(self,p):
+        '''
+        === description ===
+        Вспомогательная функция расчета газосодержания для точечного расчета газосодержания.
+        Используется в других функциях: объемный коэффициент, вязкость
+        === input ===
+        p - давление для расчета
+        === return ===
+        Возвращает значение газосодержания
+        '''
         a = 2.8869 - m.pow((14.1811 - 3.3093 * m.log(p, 10)), 0.5)
         rs_glaso = 1 * self.gden_input * m.pow(((((141.5 / self.oden_input) - 131.5) ** 0.989 / (m.pow(self.t_input * 1.8 + 32, 0.172))) * m.pow(10, a)), 1.225)
         # Логика для насыщенной и недонасыщенной ветви
@@ -217,8 +285,15 @@ class PVT:
 
     @functools.lru_cache
     def RS_deghetto_cal(self,p):
-
-        # Корреляция де Гетто для газосодержания
+        '''
+        === description ===
+        Вспомогательная функция расчета газосодержания для точечного расчета газосодержания.
+        Используется в других функциях: объемный коэффициент, вязкость
+        === input ===
+        p - давление для расчета
+        === return ===
+        Возвращает значение газосодержания
+        '''
         # Сверхтяжелая нефть
         if (141.5 / self.oden_input) - 131.5 <= 10:
             a = 0.01694 * ((141.5 / self.oden_input) - 131.5) - 0.00156 * (self.t_input * 1.8 + 32)
@@ -260,7 +335,15 @@ class PVT:
     # Источник: https://www.ihsenergy.ca/support/documentation_ca/Harmony/content/html_files/reference_material/calculations_and_correlations/oil_correlations.htm
     @functools.lru_cache
     def RS_vb_cal(self,p):
-
+        '''
+        === description ===
+        Вспомогательная функция расчета газосодержания для точечного расчета газосодержания.
+        Используется в других функциях: объемный коэффициент, вязкость
+        === input ===
+        p - давление для расчета
+        === return ===
+        Возвращает значение газосодержания
+        '''
         if ((141.5 / self.oden_input) - 131.5) <= 30:
             c1 = 0.0362
             c2 = 1.0937
@@ -281,7 +364,15 @@ class PVT:
 
     @functools.lru_cache
     def RS_pf_cal(self,p):
-
+        '''
+        === description ===
+        Вспомогательная функция расчета газосодержания для точечного расчета газосодержания.
+        Используется в других функциях: объемный коэффициент, вязкость
+        === input ===
+        p - давление для расчета
+        === return ===
+        Возвращает значение газосодержания
+        '''
         a = 7.916 * m.pow(10,-4) * m.pow(((141.5/self.oden_input)-131.5),1.541) - 4.561 * m.pow(10,-5) * m.pow((self.t_input*1.8+32),1.3911)
         rs_pf = 1 * m.pow(((p/112.727)+12.34)*m.pow(self.gden_input,0.8439)*m.pow(10,a), 1.73184)
         if rs_pf < self.rs_input_m3*35.314/6.289:
@@ -291,7 +382,15 @@ class PVT:
 
     @functools.lru_cache
     def RS_lasater_cal(self,p):
-
+        '''
+        === description ===
+        Вспомогательная функция расчета газосодержания для точечного расчета газосодержания.
+        Используется в других функциях: объемный коэффициент, вязкость
+        === input ===
+        p - давление для расчета
+        === return ===
+        Возвращает значение газосодержания
+        '''
         mwo = (677.3893- 13.2161 * ((141.5/self.oden_input)-131.5) + 0.024775 * m.pow(((141.5/self.oden_input)-131.5),2)
               + 0.00067851 *m.pow(((141.5/self.oden_input)-131.5),3))
         yg = 0.08729793+0.37912718*m.log(((p*self.gden_input)/((self.t_input*1.8+32)+460))+0.769066)
@@ -301,8 +400,20 @@ class PVT:
         else:
             return self.rs_input_m3 * 35.314 / 6.289
 
+    '''
+        ================== Давление насыщения ==================
+    '''
+
     @functools.lru_cache
     def Pb_standing(self):
+        '''
+        === description ===
+        Вспомогательная функция расчета давления насыщения.
+        Используется в других функциях: объемный коэффициент, вязкость.
+        Внутри вызывает расчет газосодержания и итерируется по датафрейму газосодержание-давление
+        === return ===
+        Возвращает значение давления насыщения
+        '''
         self.RS_standing()
         for rs in self.RS_standing()['Rs_Standing']:
             if rs - self.rs_input_m3 < 0.02:
@@ -313,6 +424,14 @@ class PVT:
 
     @functools.lru_cache
     def Pb_glaso(self):
+        '''
+        === description ===
+        Вспомогательная функция расчета давления насыщения.
+        Используется в других функциях: объемный коэффициент, вязкость.
+        Внутри вызывает расчет газосодержания и итерируется по датафрейму газосодержание-давление
+        === return ===
+        Возвращает значение давления насыщения
+        '''
         for rs in self.RS_glaso()['Rs_Glaso']:
             if rs - self.rs_input_m3 < 0.02:
                 pb_glaso = self.RS_glaso().loc[self.RS_glaso()['Rs_Glaso'] == rs, 'Pressure'].iloc[0]
@@ -322,6 +441,14 @@ class PVT:
 
     @functools.lru_cache
     def Pb_deghetto(self):
+        '''
+        === description ===
+        Вспомогательная функция расчета давления насыщения.
+        Используется в других функциях: объемный коэффициент, вязкость.
+        Внутри вызывает расчет газосодержания и итерируется по датафрейму газосодержание-давление
+        === return ===
+        Возвращает значение давления насыщения
+        '''
         for rs in self.RS_deghetto()['Rs_De_Ghetto']:
             if rs - self.rs_input_m3 < 0.02:
                 pb_deghetto = self.RS_deghetto().loc[self.RS_deghetto()['Rs_De_Ghetto'] == rs, 'Pressure'].iloc[0]
@@ -331,6 +458,14 @@ class PVT:
 
     @functools.lru_cache
     def Pb_vb(self):
+        '''
+        === description ===
+        Вспомогательная функция расчета давления насыщения.
+        Используется в других функциях: объемный коэффициент, вязкость.
+        Внутри вызывает расчет газосодержания и итерируется по датафрейму газосодержание-давление
+        === return ===
+        Возвращает значение давления насыщения
+        '''
         for rs in self.RS_vb()['Rs_Vasquez&Beggs']:
             if rs - self.rs_input_m3 < 0.02:
                 pb_vb = self.RS_vb().loc[self.RS_vb()['Rs_Vasquez&Beggs'] == rs, 'Pressure'].iloc[0]
@@ -340,6 +475,14 @@ class PVT:
 
     @functools.lru_cache
     def Pb_pf(self):
+        '''
+        === description ===
+        Вспомогательная функция расчета давления насыщения.
+        Используется в других функциях: объемный коэффициент, вязкость.
+        Внутри вызывает расчет газосодержания и итерируется по датафрейму газосодержание-давление
+        === return ===
+        Возвращает значение давления насыщения
+        '''
         for rs in self.RS_pf()['Rs_Petorsky&Farshad']:
             if rs - self.rs_input_m3 < 0.02:
                 pb_pf = self.RS_pf().loc[self.RS_pf()['Rs_Petorsky&Farshad'] == rs, 'Pressure'].iloc[0]
@@ -349,6 +492,14 @@ class PVT:
 
     @functools.lru_cache
     def Pb_lasater(self):
+        '''
+        === description ===
+        Вспомогательная функция расчета давления насыщения.
+        Используется в других функциях: объемный коэффициент, вязкость.
+        Внутри вызывает расчет газосодержания и итерируется по датафрейму газосодержание-давление
+        === return ===
+        Возвращает значение давления насыщения
+        '''
         for rs in self.RS_lasater()['Rs_Lasater']:
             if rs - self.rs_input_m3 < 0.02:
                 pb_lasater = self.RS_lasater().loc[self.RS_lasater()['Rs_Lasater'] == rs, 'Pressure'].iloc[0]
@@ -356,48 +507,169 @@ class PVT:
                 continue
         return pb_lasater
 
+    '''
+    ================== Объемный коэффициент нефти (насыщенная ветвь) ==================
+    '''
+
     @functools.lru_cache
-    def BO_standing(self, rs_corr):
+    def BOsat_standing(self, rs_corr):
+        '''
+        === description ===
+        Функция для расчета объемного коэффициента насыщенной ветви
+        === input ===
+        rs_corr - выбранная корреляция для газосодержания
+        === return ===
+        Возвращает датафрейм: объемный коэффициент для насыщенной ветви - давление
+        '''
         rs_dict_help = {'Standing': self.RS_standing_cal, 'De_Ghetto': self.RS_deghetto_cal,
-                        'Glaso': self.RS_glasso_cal,
+                        'Glaso': self.RS_glaso_cal,
                         'Vasquez&Beggs': self.RS_vb_cal, 'Petorsky&Farshad': self.RS_pf_cal,
                         'Lasater': self.RS_lasater_cal}
+
+        p_massive = np.arange(self.p1_input_bar * 14.5037, self.p2_input_bar * 14.5037,
+                              self.p_step_input_bar * 14.5037)
+        bosat_standing_res = []
+        p_sat = []
+        for p in p_massive:
+            rs = rs_dict_help[rs_corr](p)
+            if rs < (self.rs_input_m3 * 35.314 / 6.289) - 0.01:
+                p_sat.append(p)
+                bo_sat = 0.9759 + 0.000120 * m.pow((rs * (
+                    m.pow(self.gden_input / ((141.5 / self.oden_input) - 131.5), 0.5)) + 1.25 * (
+                                                                self.t_input * 1.8 + 32)), 1.2)
+                bosat_standing_res.append(bo_sat)
+        df_bosat_standing_res = pd.DataFrame({'Pressure': p_sat, 'bo': bosat_standing_res})
+        df_bosat_standing_res['Pressure'] = df_bosat_standing_res['Pressure'] / 14.5037
+
+
+        return df_bosat_standing_res, df_bosat_standing_res['bo'].iloc[-1]
+
+    def BOsat_vb(self, rs_corr):
+        '''
+               === description ===
+               Функция для расчета объемного коэффициента насыщенной ветви
+               === input ===
+               rs_corr - выбранная корреляция для газосодержания
+               === return ===
+               Возвращает датафрейм: объемный коэффициент для насыщенной ветви - давление
+               '''
+        rs_dict_help = {'Standing': self.RS_standing_cal, 'De_Ghetto': self.RS_deghetto_cal,
+                        'Glaso': self.RS_glaso_cal,
+                        'Vasquez&Beggs': self.RS_vb_cal, 'Petorsky&Farshad': self.RS_pf_cal,
+                        'Lasater': self.RS_lasater_cal}
+        p_massive = np.arange(self.p1_input_bar * 14.5037, self.p2_input_bar * 14.5037,
+                              self.p_step_input_bar * 14.5037)
+        bosat_vb_res = []
+        p_sat = []
+        if ((141.5 / self.oden_input) - 131.5) <= 30:
+            a1 = 4.677E-04
+            a2 = 1.751E-05
+            a3 = -1.811E-08
+        else:
+            a1 = 4.670E-04
+            a2 = 1.100E-05
+            a3 = 1.337E-09
+        for p in p_massive:
+            rs = rs_dict_help[rs_corr](p)
+            if rs < (self.rs_input_m3 * 35.314 / 6.289) - 0.01:
+                p_sat.append(p)
+                bo_sat = 1 + a1 * rs + a2 * (self.t_input * 1.8 + 32 - 60) * (self.oden_input/self.gden_input) + a3 * rs * (self.t_input * 1.8 + 32 - 60) * (self.oden_input/self.gden_input)
+                bosat_vb_res.append(bo_sat)
+        df_bosat_standing_res = pd.DataFrame({'Pressure': p_sat, 'bo': bosat_vb_res})
+        df_bosat_standing_res['Pressure'] = df_bosat_standing_res['Pressure'] / 14.5037
+
+        return df_bosat_standing_res, df_bosat_standing_res['bo'].iloc[-1]
+
+
+
+    '''
+        ================== Объемный коэффициент нефти (недонасыщенная ветвь) ==================
+    '''
+
+    def BOunsat_standing(self, rs_corr, bosat_corr):
+        '''
+        === description ===
+        Функция для расчета объемного коэффициента недонасыщенной ветви
+        === input ===
+        rs_corr - выбранная корреляция для газосодержания
+        === return ===
+        Возвращает датафрейм объемный коэффициент (насыщенная + недонасыщенная ветвь) - давление
+        '''
         pb_dict_help = {'Standing': self.Pb_standing(), 'De_Ghetto': self.Pb_deghetto(),
                         'Glaso': self.Pb_glaso(),
                         'Vasquez&Beggs': self.Pb_vb(), 'Petorsky&Farshad': self.Pb_pf(),
                         'Lasater': self.Pb_lasater()}
+        bosat_dict_help = {'Standing': self.BOsat_standing(rs_corr),
+                           'Vasquez_Beggs':self.BOsat_vb(rs_corr)}
         p_massive = np.arange(self.p1_input_bar * 14.5037, self.p2_input_bar * 14.5037,
                               self.p_step_input_bar * 14.5037)
-        bo_standing_res = []
-        pb_searched = pb_dict_help[rs_corr]  # self.rs_standing_pb_search() * 14.5037
-        bob = 0.9759 + 0.000120 * m.pow(((self.rs_input_m3 * 35.314 / 6.289) * (
-            m.pow((self.gden_input / ((141.5 / self.oden_input) - 131.5)), 0.5)) + 1.25 * (
-                                                     self.t_input * 1.8 + 32)),
-                                        1.2)
+        bounsat_standing_res = []
+        p_unsat = []
+        pb_searched = pb_dict_help[rs_corr] * 14.5037
+        bob = bosat_dict_help[bosat_corr][1]
         for p in p_massive:
-            rs = rs_dict_help[rs_corr](p)
-            if rs < (self.rs_input_m3 * 35.314 / 6.289) - 0.01:
-                # насыщенная ветвь
-                bo_sat = 0.9759 + 0.000120 * m.pow((rs * (
-                    m.pow(self.gden_input / ((141.5 / self.oden_input) - 131.5), 0.5)) + 1.25 * (
-                                                                self.t_input * 1.8 + 32)), 1.2)
-                bo_standing_res.append(bo_sat)
-            else:
-                # недонасыщенная ветвь
+            if p > pb_searched:
+                p_unsat.append(p)
                 a = (4.1646 * m.pow(10, -7) * m.pow((self.rs_input_m3 * 35.314 / 6.289), 0.69357) * m.pow(
-                    self.gden_input, 0.1885) * m.pow(((141.5 / self.oden_input) - 131.5), 0.3272) * m.pow(
-                    (self.t_input * 1.8) + 32, 0.6729))
+            self.gden_input, 0.1885) * m.pow(((141.5 / self.oden_input) - 131.5), 0.3272) * m.pow(
+            (self.t_input * 1.8) + 32, 0.6729))
                 bo_unsat = bob * m.exp(-a * (m.pow(p, 0.4094) - m.pow(pb_searched, 0.4094)))
-                bo_standing_res.append(bo_unsat)
-        df_bo_standing_res = pd.DataFrame({'Pressure': p_massive, 'Bo_Standing': bo_standing_res})
-        df_bo_standing_res['Pressure'] = df_bo_standing_res['Pressure'] / 14.5037
+                bounsat_standing_res.append(bo_unsat)
 
-        return df_bo_standing_res
+        df_bounsat_standing_res = pd.DataFrame({'Pressure': p_unsat, 'bo': bounsat_standing_res})
+        df_bounsat_standing_res['Pressure'] = df_bounsat_standing_res['Pressure'] / 14.5037
+
+        bo_sat = bosat_dict_help[bosat_corr][0]
+        bo_res = pd.concat([bo_sat, df_bounsat_standing_res], axis=0)
+        #plt.plot(bo_res['Pressure'], bo_res['bo'])
+        #plt.show()
+
+        return df_bounsat_standing_res
+
+    def Bounsat_vb(self, rs_corr,bosat_corr):
+        '''
+        === description ===
+        Функция для расчета объемного коэффициента недонасыщенной ветви
+        === input ===
+        rs_corr - выбранная корреляция для газосодержания
+        === return ===
+        Возвращает датафрейм: объемный коэффициент для недонасыщенной ветви - давление
+        '''
+
+        pb_dict_help = {'Standing': self.Pb_standing(), 'De_Ghetto': self.Pb_deghetto(),
+                        'Glaso': self.Pb_glaso(),
+                        'Vasquez&Beggs': self.Pb_vb(), 'Petorsky&Farshad': self.Pb_pf(),
+                        'Lasater': self.Pb_lasater()}
+        bosat_dict_help = {'Standing': self.BOsat_standing(rs_corr),
+                           'Vasquez_Beggs': self.BOsat_vb(rs_corr)}
+        p_massive = np.arange(self.p1_input_bar * 14.5037, self.p2_input_bar * 14.5037,
+                              self.p_step_input_bar * 14.5037)
+        bounsat_vb_res = []
+        p_unsat = []
+        pb = pb_dict_help[rs_corr] * 14.5037
+        bob = bosat_dict_help[bosat_corr][1]
+        for p in p_massive:
+            if p > pb:
+                p_unsat.append(p)
+                c = (-1433 + 5 * (self.rs_input_m3* 35.314 / 6.289) +17.2 *(self.t_input * 1.8 + 32) - 1180 * self.gden_input + 12.61 * self.oden_input)/(p * m.pow(10,5))
+                bo_unsat = bob * m.exp(c *(pb - p))
+                bounsat_vb_res.append(bo_unsat)
+
+        df_bounsat_vb_res = pd.DataFrame({'Pressure': p_unsat, 'bo': bounsat_vb_res})
+        df_bounsat_vb_res['Pressure'] = df_bounsat_vb_res['Pressure'] / 14.5037
+        bo_sat = bosat_dict_help[bosat_corr][0]
+        bo_res = pd.concat([bo_sat, df_bounsat_vb_res], axis=0)
+        plt.plot(bo_res['Pressure'], bo_res['bo'])
+        plt.show()
+
+        return df_bounsat_vb_res
+
+
 
         ##TODO: работает некорректно, исправить
     def BO_vb(self, rs_corr):
         rs_dict_help = {'Standing': self.RS_standing_cal, 'De_Ghetto': self.RS_deghetto_cal,
-                        'Glaso': self.RS_glasso_cal,
+                        'Glaso': self.RS_glaso_cal,
                         'Vasquez&Beggs': self.RS_vb_cal, 'Petorsky&Farshad': self.RS_pf_cal,
                         'Lasater': self.RS_lasater_cal}
         p_massive = np.arange(self.p1_input_bar * 14.5037, self.p2_input_bar * 14.5037,
@@ -428,6 +700,11 @@ class PVT:
         df_bo_vb_res['Pressure'] = df_bo_vb_res['Pressure'] / 14.5037
 
         return df_bo_vb_res
+
+
+    '''
+    ================== Вязкость дегазированной нефти ==================
+    '''
 
     @functools.lru_cache
     def MUod_standing(self):
@@ -497,6 +774,9 @@ class PVT:
     def MUod_Hossian(self):
         pass
 
+    '''
+    ================== Вязкость нефти (насыщенная ветвь) ==================
+    '''
 
 
     @functools.lru_cache
@@ -759,6 +1039,11 @@ class PVT:
 
         return df_mu_ks_res_sat, df_mu_ks_res_sat['mu'].iloc[-1]
 
+    '''
+    ================== Вязкость нефти (недонасыщенная ветвь) ==================
+    '''
+
+
     @functools.lru_cache
     def MUunsat_Standing(self, RS_corr, mu_sat_corr, muod_corr):
         munsat_standing_res = []
@@ -1001,9 +1286,11 @@ class PVT:
 
 
 
-rs1 = PVT(rs_input_m3 = 80, oden_input= 0.88, t_input_c= 70, gden_input= 0.6, p1_input_bar=1, p2_input_bar=350,p_step_input_bar=1)
+rs1 = PVT(rs_input_m3 = 120, oden_input= 0.86, t_input_c= 70, gden_input= 0.6, p1_input_bar=1, p2_input_bar=350,p_step_input_bar=1)
 #print(rs1.MUunsat_standing('Standing'))
-rs1.mu_plot('Lasater','Petorsky_Farshad', 'Petorsky_Farshad', 'Hossian')
+#rs1.mu_plot('Lasater','Petorsky_Farshad', 'Petorsky_Farshad', 'Hossian')
 #rs1.cal_calc('Standing', 'Standing','Standing')
 #rs1.MUunsat_standing('Standing','Standing')
 #print(rs1.MUsat_standing('Standing')[1])
+
+print(rs1.Bounsat_vb('Glaso', 'Vasquez_Beggs'))
